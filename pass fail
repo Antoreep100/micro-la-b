@@ -1,0 +1,63 @@
+.model small
+.stack 100h
+.data
+ baseMark db 65 
+ mark db  ?
+ msg_pass  db  'pass$'
+ msg_fail db   'fail$'
+ msg_invalid db 'invalid!$'  
+
+.code
+main proc
+  mov ax,@data
+  mov ds,ax
+   
+   mov al,10
+  
+   
+    cmp al, 0   
+    jl invalid  
+     
+     cmp al, 100 
+     
+     jg invalid
+    
+    cmp al,basemark
+    jge pass
+    jmp fail
+    
+   
+pass:
+  mov ah ,09h
+  lea dx, msg_pass 
+  int 21h
+   jmp exit_prog
+  
+   fail:
+    mov ah ,09h
+  lea dx, msg_fail 
+  int 21h
+    jmp exit_prog
+  
+ 
+  
+invalid:
+  mov ah,09h
+  lea dx,msg_invalid 
+  int 21h
+  
+  exit_prog:
+  mov ah,4Ch
+  int 21h
+  
+
+  
+   
+
+   
+
+    
+    
+    main endp
+end main
+
