@@ -1,0 +1,39 @@
+.model small
+.stack 100h
+.data
+msg db "Even : $"
+newline db 13, 10, "$"
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+
+    mov cx, 10       ; loop 10 times (from 0 to 9)
+    mov al, 0        ; start from 0
+
+loop_start:
+    test al, 1       ; check if number is even
+    jnz skip         ; if odd, skip printing
+
+    mov ah, 09h
+    lea dx, msg
+    int 21h          ; print "Even : "
+
+    mov ah, 02h
+    mov dl, al
+    add dl, '0'      ; convert number to ASCII
+    int 21h
+
+    mov ah, 09h
+    lea dx, newline
+    int 21h          ; print newline
+
+skip:
+    inc al
+    loop loop_start  ; decrement cx and repeat if not zero
+
+    mov ah, 4ch
+    int 21h          ; exit program
+main endp
+end main
