@@ -1,0 +1,62 @@
+
+ .model small
+.stack 100h
+
+.data
+    msg1 db 10,13, 'Enter first number (0-9): $'
+    msg2 db 10,13, 'Enter second number (0-9): $'
+    result db 10,13, 'Greatest number is: $'
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+
+    ; Prompt for first number
+    mov ah, 9
+    lea dx, msg1
+    int 21h
+
+    mov ah, 1       ; read first character
+    int 21h
+    sub al, 48      ; convert ASCII to number
+    mov bl, al      ; store in BL
+
+    ; Prompt for second number
+    mov ah, 9
+    lea dx, msg2
+    int 21h
+
+    mov ah, 1       ; read second character
+    int 21h
+    sub al, 48
+    mov bh, al      ; store in BH
+
+    ; Compare numbers
+    cmp bl, bh
+    jg bl_is_greater    ; if BL > BH, jump to print BL
+    mov al, bh          ; else, move BH to AL
+    jmp print_result
+
+bl_is_greater:
+    mov al, bl
+
+print_result:
+    add al, 48          ; convert back to ASCII
+
+    mov ah, 9
+    lea dx, result
+    int 21h
+
+    mov ah, 2 
+    
+    mov dl, al 
+   
+    int 21h
+
+    ; Exit
+    mov ah, 4ch
+    int 21h
+main endp
+end main
+ 
