@@ -1,0 +1,35 @@
+.model small
+.stack 100h
+
+.data
+    msg db 10,13, 'Counting: $'
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+
+    ; Print message
+    mov ah, 9
+    lea dx, msg
+    int 21h
+
+    ; Initialize counter
+    mov cx, 5        ; loop 5 times
+    mov bl, 1        ; start from 1
+
+print_loop:
+    mov al, bl
+    add al, 48       ; convert number to ASCII
+    mov ah, 2
+    mov dl, al
+    int 21h          ; print character
+
+    inc bl           ; next number
+    loop print_loop  ; repeat until cx = 0
+
+    ; Exit program
+    mov ah, 4ch
+    int 21h
+main endp
+end main
