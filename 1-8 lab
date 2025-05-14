@@ -1,0 +1,337 @@
+Here are the solutions for the Lab Assignment 2 from CSE0613210 - Microprocessor Assembly Programming at Uttara University. The programs are written in x86 Assembly Language (MASM/TASM syntax) for clarity and educational compatibility.
+
+
+---
+
+1. Multiply Two Numbers from Keyboard
+
+.model small
+.stack 100h
+.data
+    msg1 db 'Enter first number: $'
+    msg2 db 13,10,'Enter second number: $'
+    resultMsg db 13,10,'Result: $'
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    ; Input first number
+    mov ah, 1
+    int 21h
+    sub al, '0'
+    mov bl, al
+
+    ; Input second number
+    mov ah, 1
+    int 21h
+    sub al, '0'
+    mov bh, al
+
+    ; Multiply
+    mov al, bl
+    mul bh  ; AL * BH -> AX
+
+    ; Display result
+    mov dx, offset resultMsg
+    mov ah, 9
+    int 21h
+
+    add al, '0'
+    mov dl, al
+    mov ah, 2
+    int 21h
+
+    mov ah, 4ch
+    int 21h
+end main
+
+
+---
+
+2. Divide Two Numbers (Predefined)
+
+.model small
+.stack 100h
+.data
+    result db 'Quotient: $'
+    remMsg db 13,10,'Remainder: $'
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    ; Example: 11 ÷ 4
+    mov al, 11
+    mov bl, 4
+    div bl      ; AL/BL -> AL=quotient, AH=remainder
+
+    ; Print quotient
+    mov dx, offset result
+    mov ah, 9
+    int 21h
+
+    add al, '0'
+    mov dl, al
+    mov ah, 2
+    int 21h
+
+    ; Print remainder
+    mov dx, offset remMsg
+    mov ah, 9
+    int 21h
+
+    mov dl, ah
+    add dl, '0'
+    mov ah, 2
+    int 21h
+
+    mov ah, 4ch
+    int 21h
+end main
+
+
+---
+
+3. Print Full Name with Loop
+
+.model small
+.stack 100h
+.data
+    name db 'Oliver James$'
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    mov si, offset name
+next_char:
+    mov al, [si]
+    cmp al, '$'
+    je endp
+    mov dl, al
+    mov ah, 2
+    int 21h
+    inc si
+    jmp next_char
+
+endp:
+    mov ah, 4ch
+    int 21h
+end main
+
+
+---
+
+4. Find Minimum of Three
+
+.model small
+.stack 100h
+.data
+    msg db 'Smallest: $'
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    mov al, 10
+    mov bl, 2
+    mov cl, 60
+
+    ; compare al and bl
+    cmp al, bl
+    jle al_bl
+    mov al, bl
+
+al_bl:
+    cmp al, cl
+    jle done
+    mov al, cl
+
+done:
+    mov dx, offset msg
+    mov ah, 9
+    int 21h
+
+    add al, '0'
+    mov dl, al
+    mov ah, 2
+    int 21h
+
+    mov ah, 4ch
+    int 21h
+end main
+
+
+---
+
+5. Print stdID and City in Reverse using Stack
+
+.model small
+.stack 100h
+.data
+    stdID db '012336589$'
+    city db 'Uttara$'
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    ; Reverse stdID
+    mov si, offset stdID
+    call reversePrint
+
+    ; Reverse city
+    mov si, offset city
+    call reversePrint
+
+    mov ah, 4ch
+    int 21h
+
+reversePrint proc
+    push si
+    mov cx, 0
+
+count_loop:
+    cmp byte ptr [si+cx], '$'
+    je print_loop
+    inc cx
+    jmp count_loop
+
+print_loop:
+    dec cx
+    js end_reverse
+    mov dl, [si+cx]
+    mov ah, 2
+    int 21h
+    jmp print_loop
+
+end_reverse:
+    pop si
+    ret
+reversePrint endp
+end main
+
+
+---
+
+6. Print Odd Numbers Between 0 to 10
+
+.model small
+.stack 100h
+.code
+main:
+    mov cx, 0
+
+next:
+    mov ax, cx
+    mov bl, 2
+    div bl
+    cmp ah, 0
+    je skip
+    ; print cx if odd
+    mov dl, cl
+    add dl, '0'
+    mov ah, 2
+    int 21h
+
+skip:
+    inc cx
+    cmp cx, 10
+    jle next
+
+    mov ah, 4ch
+    int 21h
+end main
+
+
+---
+
+7. Print Largest Number in Array
+
+.model small
+.stack 100h
+.data
+    arr db 5,6,8,2,9,1,0,3
+    max db 0
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    mov si, 0
+    mov cx, 8
+    mov bl, 0
+
+find_max:
+    mov al, arr[si]
+    cmp al, bl
+    jle skip
+    mov bl, al
+
+skip:
+    inc si
+    loop find_max
+
+    add bl, '0'
+    mov dl, bl
+    mov ah, 2
+    int 21h
+
+    mov ah, 4ch
+    int 21h
+end main
+
+
+---
+
+8. Convert Lowercase String to Uppercase
+
+.model small
+.stack 100h
+.data
+    str db 'bangladesh$', 0
+
+.code
+main:
+    mov ax, @data
+    mov ds, ax
+
+    mov si, offset str
+
+loop_upper:
+    mov al, [si]
+    cmp al, '$'
+    je done
+    cmp al, 'a'
+    jl skip
+    cmp al, 'z'
+    jg skip
+    sub al, 32
+    mov [si], al
+
+skip:
+    inc si
+    jmp loop_upper
+
+done:
+    ; print result
+    mov dx, offset str
+    mov ah, 9
+    int 21h
+
+    mov ah, 4ch
+    int 21h
+end main
+
+
+---
+
+Let me know if you want the .asm files or an explanation of how to run them using TASM or DOSBox.
+
